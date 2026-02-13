@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍌 Bello! 🍌</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --minion-yellow: #ffd93d;
+            --minion-dark-yellow: #f4b731;
+            --minion-blue: #4169e1;
+            --minion-dark-blue: #2c4c8c;
+            --banana-yellow: #ffe135;
+            --goggle-gray: #5a5a5a;
+        }
+
+        body {
+            font-family: 'Bubblegum Sans', cursive;
+            background: linear-gradient(135deg, #87ceeb 0%, #4682b4 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Floating bananas background */
+        .floating-bananas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .banana {
+            position: absolute;
+            font-size: 30px;
+            animation: float-banana linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float-banana {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .music-notice {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--minion-yellow);
+            border: 4px solid var(--minion-blue);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: bounce 2s infinite;
+            color: var(--minion-blue);
+            text-transform: uppercase;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        .stage {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .stage-content {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .stage-content.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stage-content.exit {
+            opacity: 0;
+            transform: scale(0.8) rotate(10deg);
+            position: absolute;
+            width: 100%;
+        }
+
+        .minion-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: var(--minion-yellow);
+            text-shadow: 
+                4px 4px 0px var(--minion-blue),
+                8px 8px 0px var(--minion-dark-blue),
+                -2px -2px 0px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            animation: wiggle 2s ease-in-out infinite;
+            text-transform: uppercase;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: white;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        /* Banana clicking game */
+        .banana-game {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin: 3rem auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            border: 5px solid var(--minion-yellow);
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .clickable-banana {
+            position: absolute;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            animation: banana-bounce 2s ease-in-out infinite;
+            user-select: none;
+            filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .clickable-banana:hover {
+            transform: scale(1.3) rotate(20deg);
+        }
+
+        .clickable-banana.clicked {
+            animation: banana-explode 0.5s ease-out forwards;
+        }
+
+        @keyframes banana-bounce {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        @keyframes banana-explode {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.8) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .counter {
+            font-size: 1.5rem;
+            color: var(--minion-yellow);
+            background: var(--minion-blue);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Minion character */
+        .minion-character {
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+            position: relative;
+            animation: minion-dance 1s ease-in-out infinite;
+        }
+
+        @keyframes minion-dance {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .minion-body {
+            width: 200px;
+            height: 280px;
+            background: var(--minion-yellow);
+            border-radius: 100px 100px 80px 80px;
+            position: relative;
+            margin: 0 auto;
+            border: 6px solid var(--goggle-gray);
+        }
+
+        .goggle {
+            width: 120px;
+            height: 120px;
+            background: var(--goggle-gray);
+            border-radius: 50%;
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid black;
+        }
+
+        .goggle::before {
+            content: '';
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .goggle::after {
+            content: '';
+            width: 30px;
+            height: 30px;
+            background: #8b4513;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: eye-look 3s ease-in-out infinite;
+        }
+
+        @keyframes eye-look {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-60%, -50%); }
+            75% { transform: translate(-40%, -50%); }
+        }
+
+        .mouth {
+            width: 100px;
+            height: 50px;
+            border: 6px solid black;
+            border-top: none;
+            border-radius: 0 0 100px 100px;
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .overalls {
+            width: 80px;
+            height: 100px;
+            background: var(--minion-blue);
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .overalls::before,
+        .overalls::after {
+            content: '';
+            width: 30px;
+            height: 8px;
+            background: var(--minion-blue);
+            position: absolute;
+            top: -20px;
+            border-radius: 5px;
+        }
+
+        .overalls::before {
+            left: 10px;
+            transform: rotate(-30deg);
+        }
+
+        .overalls::after {
+            right: 10px;
+            transform: rotate(30deg);
+        }
+
+        /* Buttons */
+        .minion-btn {
+            padding: 1.2rem 3rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: var(--minion-blue);
+            background: var(--minion-yellow);
+            border: 5px solid var(--minion-blue);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 var(--minion-dark-yellow);
+            position: relative;
+            margin-top: 2rem;
+        }
+
+        .minion-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 var(--minion-dark-yellow);
+        }
+
+        .minion-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 var(--minion-dark-yellow);
+        }
+
+        .yes-no-btns {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .yes-btn {
+            background: var(--minion-yellow);
+            color: var(--minion-blue);
+            border: 5px solid var(--minion-blue);
+            box-shadow: 0 8px 0 var(--minion-dark-blue);
+        }
+
+        .yes-btn:hover {
+            box-shadow: 0 13px 0 var(--minion-dark-blue);
+        }
+
+        .yes-btn:active {
+            box-shadow: 0 4px 0 var(--minion-dark-blue);
+        }
+
+        .no-btn {
+            background: white;
+            color: var(--minion-blue);
+            border: 5px solid var(--minion-blue);
+            box-shadow: 0 8px 0 var(--goggle-gray);
+            position: relative;
+        }
+
+        .no-btn:hover {
+            transform: translate(calc(var(--mouse-x) * 100px), calc(var(--mouse-y) * 100px)) !important;
+            box-shadow: 0 13px 0 var(--goggle-gray);
+        }
+
+        .celebration {
+            display: none;
+            font-size: 6rem;
+            animation: celebration-bounce 0.5s ease-in-out infinite;
+        }
+
+        @keyframes celebration-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .speech-bubble {
+            background: white;
+            padding: 2rem 2.5rem;
+            border-radius: 30px;
+            border: 5px solid var(--minion-blue);
+            position: relative;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 30px solid var(--minion-blue);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 25px solid white;
+        }
+
+        @media (max-width: 768px) {
+            .minion-title {
+                font-size: 2.5rem;
+            }
+            
+            .banana-game {
+                height: 300px;
+            }
+            
+            .clickable-banana {
+                font-size: 3rem;
+            }
+            
+            .minion-character {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .minion-body {
+                width: 150px;
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-bananas" id="floatingBananas"></div>
+    <div class="music-notice">🎵 Papapapapapa! 🎵</div>
+
+    <div class="container">
+        <div class="stage">
+            <!-- Stage 1: Banana Collection -->
+            <div class="stage-content active" id="stage1">
+                <h1 class="minion-title">Bello Chica! 🍌</h1>
+                <p class="subtitle">Me needo your help-o! Catch da bananas!</p>
+                
+                <div class="banana-game" id="bananaGame"></div>
+                <div class="counter" id="counter">BANANAS: 0 / 8 🍌</div>
+            </div>
+
+            <!-- Stage 2: Minion Character -->
+            <div class="stage-content" id="stage2">
+                <h1 class="minion-title">Tank You! 🍌</h1>
+                <div class="minion-character">
+                    <div class="minion-body">
+                        <div class="goggle"></div>
+                        <div class="mouth"></div>
+                        <div class="overalls"></div>
+                    </div>
+                </div>
+                <p class="subtitle">You very molto bello!</p>
+                <button class="minion-btn" onclick="showQuestion()">Continua! →</button>
+            </div>
+
+            <!-- Stage 3: The Question -->
+            <div class="stage-content" id="stage3">
+                <h1 class="minion-title">Poulet Tiki Masala!</h1>
+                
+                <div class="speech-bubble">
+                    <h2 style="font-family: 'Fredoka One', cursive; font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 1rem; color: var(--minion-blue);">
+                        Me yours dis Valentine's! 💛
+                    </h2>
+                    <h2 style="font-family: 'Fredoka One', cursive; font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 1rem; color: var(--minion-blue);">
+                        You be mine-o?
+                    </h2>
+                    <p style="font-size: 1.2rem; color: #555; margin-top: 1rem;">
+                        (Translation: Will you be my Valentine? 💕)
+                    </p>
+                </div>
+
+                <div class="yes-no-btns">
+                    <button class="yes-btn minion-btn" onclick="handleYes()">PAPOY! (YES!) 🍌💛</button>
+                    <button class="no-btn minion-btn" id="noBtn" onclick="handleNo()">Bello No</button>
+                </div>
+                <div class="celebration" id="celebration">🎉🍌💛🎊</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="musicAudio" loop>
+        <source src="diced_pineapples_mp3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="belloSound">
+        <source src="minion-bello_mp3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="laughSound">
+        <source src="minion-laugh_mp3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bananaSound">
+        <source src="minion-banana_mp3.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Audio setup
+        const musicAudio = document.getElementById('musicAudio');
+        const belloSound = document.getElementById('belloSound');
+        const laughSound = document.getElementById('laughSound');
+        const bananaSound = document.getElementById('bananaSound');
+        
+        musicAudio.volume = 0.3;
+        belloSound.volume = 0.5;
+        laughSound.volume = 0.5;
+        bananaSound.volume = 0.5;
+        
+        let musicStarted = false;
+
+        // Play sounds function
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        // Generate floating bananas
+        const bananasContainer = document.getElementById('floatingBananas');
+        for (let i = 0; i < 15; i++) {
+            const banana = document.createElement('div');
+            banana.className = 'banana';
+            banana.textContent = '🍌';
+            banana.style.left = Math.random() * 100 + '%';
+            banana.style.animationDuration = (8 + Math.random() * 8) + 's';
+            banana.style.animationDelay = Math.random() * 5 + 's';
+            bananasContainer.appendChild(banana);
+        }
+
+        // Banana clicking game
+        let bananasClicked = 0;
+        const totalBananas = 8;
+        const bananaGame = document.getElementById('bananaGame');
+        const counter = document.getElementById('counter');
+
+        // Create clickable bananas
+        for (let i = 0; i < totalBananas; i++) {
+            const banana = document.createElement('div');
+            banana.className = 'clickable-banana';
+            banana.textContent = '🍌';
+            banana.style.left = (10 + Math.random() * 70) + '%';
+            banana.style.top = (10 + Math.random() * 70) + '%';
+            banana.style.animationDelay = (i * 0.2) + 's';
+            
+            banana.addEventListener('click', function() {
+                if (!this.classList.contains('clicked')) {
+                    this.classList.add('clicked');
+                    bananasClicked++;
+                    counter.textContent = `BANANAS: ${bananasClicked} / ${totalBananas} 🍌`;
+                    
+                    // Start music on first click
+                    if (!musicStarted) {
+                        musicAudio.play().catch(e => console.log('Music play failed:', e));
+                        musicStarted = true;
+                        document.querySelector('.music-notice').style.display = 'none';
+                    }
+                    
+                    // Play banana sound
+                    playSound(bananaSound);
+                    
+                    // Create particles
+                    for (let i = 0; i < 8; i++) {
+                        createParticle(this.offsetLeft, this.offsetTop);
+                    }
+                    
+                    if (bananasClicked === totalBananas) {
+                        setTimeout(showStage2, 1000);
+                    }
+                }
+            });
+            
+            bananaGame.appendChild(banana);
+        }
+
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            const emojis = ['⭐', '✨', '💫', '🍌'];
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.cssText = `
+                position: absolute;
+                left: ${x}px;
+                top: ${y}px;
+                font-size: 1.5rem;
+                pointer-events: none;
+                animation: particleFly ${0.8 + Math.random() * 0.4}s ease-out forwards;
+            `;
+            bananaGame.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 1200);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes particleFly {
+                0% { 
+                    opacity: 1; 
+                    transform: translate(0, 0) scale(1);
+                }
+                100% { 
+                    opacity: 0; 
+                    transform: translate(${Math.random() * 100 - 50}px, ${-50 - Math.random() * 100}px) scale(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function showStage2() {
+            playSound(belloSound);
+            
+            const stage1 = document.getElementById('stage1');
+            const stage2 = document.getElementById('stage2');
+            
+            stage1.classList.remove('active');
+            stage1.classList.add('exit');
+            setTimeout(() => {
+                stage1.style.display = 'none';
+                stage2.classList.add('active');
+                
+                // More bananas!
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const banana = document.createElement('div');
+                        banana.className = 'banana';
+                        banana.textContent = '🍌';
+                        banana.style.left = Math.random() * 100 + '%';
+                        banana.style.animationDuration = (4 + Math.random() * 4) + 's';
+                        bananasContainer.appendChild(banana);
+                    }, i * 100);
+                }
+            }, 600);
+        }
+
+        function showQuestion() {
+            const stage2 = document.getElementById('stage2');
+            const stage3 = document.getElementById('stage3');
+            
+            stage2.classList.remove('active');
+            stage2.classList.add('exit');
+            setTimeout(() => {
+                stage2.style.display = 'none';
+                stage3.classList.add('active');
+            }, 600);
+        }
+
+        // No button avoidance
+        const noBtn = document.getElementById('noBtn');
+        noBtn.addEventListener('mouseover', () => {
+            const randomX = (Math.random() - 0.5) * 2;
+            const randomY = (Math.random() - 0.5) * 2;
+            noBtn.style.setProperty('--mouse-x', randomX);
+            noBtn.style.setProperty('--mouse-y', randomY);
+        });
+
+        function handleNo() {
+            playSound(laughSound);
+            alert("😂 HAHAHA! Button say bello no to YOU! Try YES button! 🍌");
+        }
+
+        function handleYes() {
+            playSound(belloSound);
+            setTimeout(() => playSound(laughSound), 500);
+            
+            document.getElementById('celebration').style.display = 'block';
+            document.querySelector('.yes-no-btns').style.display = 'none';
+            
+            // Banana explosion!
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const banana = document.createElement('div');
+                    banana.textContent = ['🍌', '💛', '✨', '🎉'][Math.floor(Math.random() * 4)];
+                    banana.style.cssText = `
+                        position: fixed;
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                        font-size: ${30 + Math.random() * 40}px;
+                        pointer-events: none;
+                        z-index: 1001;
+                        animation: explode ${1.5 + Math.random()}s ease-out forwards;
+                    `;
+                    document.body.appendChild(banana);
+                    setTimeout(() => banana.remove(), 2500);
+                }, i * 30);
+            }
+            
+            setTimeout(() => {
+                alert("🎉🍌 BANANAAAA! Me so happy! You molto bello! Best Valentine EVER! 💛✨");
+            }, 1500);
+        }
+
+        const explosionStyle = document.createElement('style');
+        explosionStyle.textContent = `
+            @keyframes explode {
+                0% { 
+                    opacity: 1; 
+                    transform: translate(0, 0) scale(0.5) rotate(0deg);
+                }
+                100% { 
+                    opacity: 0; 
+                    transform: translate(${Math.random() * 600 - 300}px, ${Math.random() * 600 - 300}px) scale(1.5) rotate(${Math.random() * 720}deg);
+                }
+            }
+        `;
+        document.head.appendChild(explosionStyle);
+    </script>
+</body>
+</html>
